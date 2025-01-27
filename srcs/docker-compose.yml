@@ -1,0 +1,24 @@
+version: ""
+
+volumes:
+  wordpress:
+    name: wordpress
+    #driver:
+    #driver_opts:
+
+  mariadb:
+
+networks:
+
+services:
+  nginx:
+
+  wordpress:
+
+  mariadb:
+
+# ///////////////// #
+# ////// BONUS //// #
+# ///////////////// #
+
+  adminer:
