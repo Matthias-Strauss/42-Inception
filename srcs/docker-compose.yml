@@ -1,24 +1,28 @@
-version: ""
+version: "3.8"
 
-volumes:
-  wordpress:
-    name: wordpress
-    #driver:
-    #driver_opts:
+# volumes:
+#   wordpress:
+#     name: wordpress
+#     #driver:
+#     #driver_opts:
 
-  mariadb:
+#   mariadb:
 
-networks:
+# networks:
 
 services:
   nginx:
+    build: requirements/nginx/
+    container_name: nginx
+    ports:
+      - "80:80"
 
-  wordpress:
+  # wordpress:
 
-  mariadb:
+  # mariadb:
 
-# ///////////////// #
-# ////// BONUS //// #
-# ///////////////// #
+  # # ///////////////// #
+  # # ////// BONUS //// #
+  # # ///////////////// #
 
-  adminer:
+  # adminer:
