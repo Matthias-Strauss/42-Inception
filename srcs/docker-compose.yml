@@ -1,4 +1,4 @@
-version: ""
+version: "3.8"
 
 volumes:
   wordpress:
@@ -12,6 +12,10 @@ networks:
 
 services:
   nginx:
+    build: requirements/nginx/.
+    container_name: nginx
+    ports:
+      - "80:80"
 
   wordpress:
 
