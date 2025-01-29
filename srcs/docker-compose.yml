@@ -6,8 +6,6 @@ version: "3.8"
 #     #driver:
 #     #driver_opts:
 
-#   mariadb:
-
 # networks:
 
 services:
@@ -16,10 +14,30 @@ services:
     container_name: nginx
     ports:
       - "80:80"
+    volumes:
+      - /home/mstrauss/data:/var/www/html
 
-  # wordpress:
+  wordpress:
+    build: requirements/wordpress/
+    container_name: wordpress
+    volumes:
+      - /home/mstrauss/data:/var/www/html
 
-  # mariadb:
+  mariadb:
+    build: requirements/mariadb/
+    container_name: mariadb
+    environment:
+      WP_USER: /run/secrets/wp_user
+      WP_PASSWORD: /run/secrets/wp_password
+    secrets:
+      - wp_password.txt
+      - wp_user.txt
+
+secrets:
+  wp_user:
+    file: ../secrets/wp_user.txt
+  wp_password:
+    file: ../secrets/wp_password.txt
 
   # # ///////////////// #
   # # ////// BONUS //// #
