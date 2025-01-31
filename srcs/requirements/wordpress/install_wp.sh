@@ -7,10 +7,10 @@ chmod +x wp-cli.phar
 ./wp-cli.phar core download --allow-root
 
 # Read secrets from Docker secrets files
-WP_USER=$(cat /run/secrets/wp_user)
-WP_PASSWORD=$(cat /run/secrets/wp_password)
-WP_ROOT_USER=$(cat /run/secrets/wp_root_user)
-WP_ROOT_PASSWORD=$(cat /run/secrets/wp_root_password)
+export WP_USER=$(cat /run/secrets/wp_user)
+export WP_PASSWORD=$(cat /run/secrets/wp_password)
+export WP_ROOT_USER=$(cat /run/secrets/wp_root_user)
+export WP_ROOT_PASSWORD=$(cat /run/secrets/wp_root_password)
 
 # Configure WordPress
 ./wp-cli.phar config create --dbname=wordpress --dbuser="$WP_USER" --dbpass="$WP_PASSWORD" --dbhost=mariadb --allow-root
