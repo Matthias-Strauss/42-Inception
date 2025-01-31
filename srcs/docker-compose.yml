@@ -1,19 +1,22 @@
+version: '3.8'
+
 services:
   nginx:
     build: requirements/nginx/
     container_name: nginx
     depends_on:
       - wordpress
-      - mariadb
     ports:
-      - "80:80"
+      - "${NGINX_PORT}:${NGINX_PORT}"
     volumes:
-      - /home/mstrauss/data:/var/www/html
+      - wordpress_data:${WP_VOLUME_PATH}
     networks:
       - inception
     restart: always
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME}
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      test: ["CMD", "curl", "-f", "https://localhost:${NGINX_PORT}"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -26,17 +29,24 @@ services:
       mariadb:
         condition: service_healthy
     volumes:
-      - /home/mstrauss/data:/var/www/html
+      - wordpress_data:${WP_VOLUME_PATH}
     secrets:
       - wp_password
       - wp_user
       - wp_root_password
       - wp_root_user
     environment:
-      WP_USER: /run/secrets/wp_user
-      WP_PASSWORD: /run/secrets/wp_password
-      WP_ROOT_USER: /run/secrets/wp_root_user
-      WP_ROOT_PASSWORD: /run/secrets/wp_root_password
+      - DOMAIN_NAME=${DOMAIN_NAME}
+      - WP_TITLE=${WP_TITLE}
+      - WP_URL=${WP_URL}
+      - WP_ADMIN_EMAIL=${WP_ADMIN_EMAIL}
+      - WP_USER_EMAIL=${WP_USER_EMAIL}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_HOST=${MYSQL_HOST}
+      - WP_ADMIN_USER_FILE=/run/secrets/wp_root_user
+      - WP_ADMIN_PASSWORD_FILE=/run/secrets/wp_root_password
+      - WP_USER_FILE=/run/secrets/wp_user
+      - WP_PASSWORD_FILE=/run/secrets/wp_password
     networks:
       - inception
     restart: always
@@ -50,12 +60,18 @@ services:
   mariadb:
     build: requirements/mariadb/
     container_name: mariadb
+    volumes:
+      - mariadb_data:${DB_VOLUME_PATH}
     secrets:
-      - wp_password
-      - wp_user
+      - db_root_password
+      - db_user
+      - db_password
     environment:
-      WP_USER: /run/secrets/wp_user
-      WP_PASSWORD: /run/secrets/wp_password
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_ROOT_USER=${MYSQL_ROOT_USER}
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_root_password
+      - MYSQL_USER_FILE=/run/secrets/db_user
+      - MYSQL_PASSWORD_FILE=/run/secrets/db_password
     networks:
       - inception
     restart: always
@@ -68,13 +84,21 @@ services:
 
 networks:
   inception:
-    name: inception
+    name: ${NETWORK_NAME}
+
+volumes:
+  wordpress_data:
+    name: wordpress_data
+  mariadb_data:
+    name: mariadb_data
 
 secrets:
-  # db_user:
-  #   file: ../secrets/db_user.txt
-  # db_password:
-  #   file: ../secrets/db_password.txt
+  db_root_password:
+    file: ../secrets/db_root_password.txt
+  db_user:
+    file: ../secrets/db_user.txt
+  db_password:
+    file: ../secrets/db_password.txt
   wp_user:
     file: ../secrets/wp_user.txt
   wp_password:
@@ -83,14 +107,3 @@ secrets:
     file: ../secrets/wp_root_user.txt
   wp_root_password:
     file: ../secrets/wp_root_password.txt
-# volumes:
-#   wordpress:
-#     name: wordpress
-#     #driver:
-#     #driver_opts:
-
-# # ///////////////// #
-# # ////// BONUS //// #
-# # ///////////////// #
-
-# adminer:
